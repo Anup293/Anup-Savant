@@ -1,0 +1,273 @@
+---
+title: "ICC Cricket World Cup"
+author: "Anup Savant"
+date: "11/22/2019"
+output: html_document
+---
+
+```{r}
+library(readxl)
+batsmen <- read_excel("C://Users//anups//Desktop//Anup//batsmen.xlsx")
+batsmen
+```
+```{r}
+## Top 10 Batsmen who has most runs in ICC Cricket World Cup
+
+library(ggplot2)
+batsmen %>%
+group_by(Player) %>%
+  summarize(Runs = sum(Runs))%>%
+  top_n(n = 10,wt = Runs)%>%
+  ggplot(aes(x = reorder(Player,Runs),y = Runs,fill = Player))+
+  geom_bar(stat = "identity",show.legend = FALSE)+
+  coord_flip()+
+  labs(x = "Player", y ="Runs", title = "Top 10 batsman with most runs in ICC Cricket World Cup")+
+  geom_text(aes(label = Runs),hjust = 1.25)
+```
+```{r}
+library(readxl)
+bowler <- read_excel("C:/Users/anups/Desktop/Anup/bowler.xlsx")
+bowler
+```
+```{r}
+## Top 5 leading wicket takers in ICC Cricket World Cup
+require(tidyverse)
+bowler
+group_by(Player)%>%
+  summarise(Wickets =  sum(`Five wicket haul`%in% Wickets))%>%
+  arrange(desc(Wickets))%>%
+  top_n(5)%>%
+  ggplot(aes(x= reorder(Player, Wickets), y = Wickets, fill = Player))+
+  geom_bar(stat = "identity",show.legend =  FALSE)+
+  labs(x = "Player" , y = "Wickets", title = "Top five leading wicket takers in ICC Cricket World Cup")+
+  theme(axis.text.x = element_text(angle = 100, hjust = 1.25))+
+  geom_text(aes(label = Wickets, vjust =1.25))
+
+```
+```
+```{r}
+library(readxl)
+matches <- read_excel("C:/Users/anups/Desktop/Anup/Matches Dataset.xlsx")
+matches
+```
+```{r}
+## Matches won by each team
+matches%>%
+  group_by(winner)%>%
+  summarize(most_win = n())%>%
+ggplot(aes(x = winner,y = most_win,fill = winner))+
+  geom_bar(stat = "identity")+
+  coord_flip()+
+  scale_y_continuous("Matches won")
+```
+
+#% MOST VICTORIES BY RUNS
+```{r}
+require(tidyverse)
+require(tidyr)
+  matches %>% filter(win_by_runs == max(win_by_runs))%>%
+  select(winner,win_by_runs)
+```
+
+```{r}
+## MOST VICTORIES BY WICKETS
+matches%>% 
+  filter(win_by_wickets == max(win_by_wickets))%>%
+  select(winner,win_by_wickets)
+```
+```{r}
+#CLOSEST MARGIN VICTORY (minimum runs)
+matches%>%
+  filter(win_by_runs != 1)%>%
+  filter(win_by_runs == min(win_by_runs)) %>%
+  select(winner, win_by_runs,edition)%>%
+  ggplot(aes(winner,fill = edition))+
+  geom_bar()+
+  coord_flip()+
+  scale_y_continuous("count of win")
+```
+```{r}
+## CLOSEST MARGIN VICTORY by Wickets
+matches%>%
+  filter(win_by_wickets >= 6)%>%
+  filter(win_by_wickets == min(win_by_wickets))%>%
+  select(winner,win_by_runs,edition)%>%
+  ggplot(aes(winner, fill = edition))+
+  geom_bar()+
+  coord_flip()+
+  scale_y_continuous("Wickets")
+```
+```{r}
+#MOST SUCCESSFUL TEAMS
+matches %>% 
+  group_by(winner, edition)%>%
+  summarize(most_win = n())%>%
+  filter(most_win == max(most_win)) %>% arrange(desc(edition,most_win))
+```
+
+```{r}
+matches
+mean(matches$win_by_runs, na.rm = T)
+mean(matches$win_by_wickets, na.rm = T)
+median(matches$win_by_wickets, na.rm = T)
+hist(matches$win_by_wickets)
+
+## Histogram win by wickets and win by runs is rightly skewed and is positively skewed.
+```
+
+
+
+```{r}
+require(lattice)
+
+``
+```{r}
+batsmen
+```
+
+```
+## Predicitive Analysis
+
+```{r}
+require(lattice)
+```
+
+`
+```
+```{r}
+## Model 4 : Batting Form in world cups
+
+require(tidyverse)
+batsmen
+cor(batsmen$Mat, batsmen$Runs)
+```
+
+```{r}
+require(lattice)
+batsmen
+xyplot(Runs~ Mat, data = batsmen)
+
+```
+
+```{r}
+summary(lm(Runs~Mat , data = batsmen))
+
+```
+
+```{r}
+ggplot(data = batsmen, aes(x = Mat, y = Runs)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+
+```
+
+```
+
+```{r}
+library(readxl)
+bowler <- read_excel("C://Users//anups//Desktop////bowler.xlsx")
+bowler
+```
+```
+```{r}
+library(readxl)
+bowler <- read_excel("C://Users//anups//Desktop//Anup//bowler.xlsx")
+bowler
+```
+
+```{r}
+## Model 1 : Bowling form in world cups.
+bowler
+xyplot(Overs ~ Runs, data = bowler)
+```
+`
+Model 3: Bowler Form
+```{r}
+## Correlation coefficent
+require(tidyverse)
+bowler
+cor(bowler$Runs, bowler$Overs)
+```
+
+
+```{r}
+bowler
+summary(lm(Overs ~ Runs, data = bowler))
+```
+
+```
+
+```{r}
+ggplot(data = bowler, aes(x = Overs, y = Runs)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+```{r}
+batsmen
+```
+
+## Model 2: Consistent Batsmen
+```{r}
+## Correlation coefficient 
+cor(batsmen$Runs, batsmen$Inns)
+```
+
+```{r}
+
+xyplot(Inns ~ Runs, data = batsmen)
+```
+
+```{r}
+summary(lm(Inns ~ Runs , data = batsmen))
+```
+
+
+```{r}
+ggplot(data = batsmen, aes(x = Runs, y = Inns)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+```{r}
+bowler
+```
+```{r}
+#Consistent bowler in World Cups
+
+xyplot(Runs ~ Wickets, data = bowler)
+```
+
+## Model 1 : Consistent Bowler
+```{r}
+## Correlation Coefficeint
+cor(bowler$Runs, bowler$Wickets)
+
+```
+
+```{r}
+summary(lm(Runs ~ Wickets, data = bowler))
+```
+
+```{r}
+ggplot(data = bowler, aes(x = Runs, y = Wickets)) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+```{r}
+require(tidyverse)
+bowler = bowler %>% mutate( Average = as.numeric(Ave), SR = Overs/Wickets)
+bowler
+
+bowler %>% mutate(bowling_form = 0.3269*Overs + 0.2846*Inns + 0.1210*Average +0.1877*SR + 0.0798*`Five wicket haul`) %>% arrange(bowling_form)
+```
+
+```{r}
+require(tidyverse)
+bowler = bowler %>% mutate( Average = as.numeric(Ave), SR = Overs/Wickets)
+bowler
+
+bowler = bowler %>% mutate(bowling_consistency = 0.4174*Overs + 0.2634*Inns + 0.1602*SR +0.0975*Average + 0.0615*`Five wicket haul`) %>% arrange(bowling_consistency)
+```
+
+
